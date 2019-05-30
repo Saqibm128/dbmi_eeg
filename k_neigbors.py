@@ -62,6 +62,8 @@ def run(parameters, num_files, use_1):
     y_pred = best_pipeline.predict(X_test)
     f1_res = f1_score(y_pred, y_test, average="weighted")
 
+
+
     print("Best F1 Score: {}".format(f1_res))
 
-    return f1_res, gridsearch
+    return f1_res, gridsearch.cv_results_
