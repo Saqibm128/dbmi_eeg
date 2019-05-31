@@ -17,7 +17,11 @@ ex.observers.append(MongoObserver.create())
 
 def generate_x_y(use_1, num_files, use_expanded_y=True, num_workers=6):
     data_all = util_funcs.read_all(use_1, num_workers, num_files)
-    x_data = np.vstack([instance.data.mean(axis=0) for instance in data_all])
+    if not use_1:
+        x_data = np.vstack([instance.data.mean(axis=0) for instance in data_all])
+    else:
+        x_data = np.vstack([instance.data.mean(axis=0, keepdims=True) for instance in data_all])
+        x_data = x_data.reshape(x_data.shape[0], -1)
     y_data_strings = [instance.seizure_type for instance in data_all]
     if use_expanded_y:
         y_data = pd.DataFrame(
@@ -32,7 +36,11 @@ def generate_x_y(use_1, num_files, use_expanded_y=True, num_workers=6):
 
 @ex.named_config
 def debug_config():
-    num_files = 200
+    num_files = 150
+
+@ex.named_config
+def use_1_config():
+    use_1 = True
 
 @ex.named_config
 def lr_config():
@@ -43,6 +51,7 @@ def lr_config():
         'lr__solver': ["sag"],
         'lr__max_iter': [250]
     }
+    clf_name = "lr"
     clf_step = ('lr', LogisticRegression())
     use_expanded_y = False
 
@@ -57,8 +66,9 @@ def rf_config():
         'rf__n_jobs' : [6],
         'rf__min_weight_fraction_leaf' : [0, 0.2, 0.5]
     }
+    clf_name = "rf"
     clf_step = ('rf', RandomForestClassifier())
-    return_pipeline = True
+    return_pipeline = False #rf is too big to store
 
 @ex.named_config
 def knn_config():
@@ -66,6 +76,7 @@ def knn_config():
         'knn__n_neighbors': [1,2,4,8,16],
         'knn__p': [1,2]
     }
+    clf_name = "knn"
     clf_step = ('knn', KNeighborsClassifier())
     return_pipeline = False # KNN holds all data we trained on, can't actually store this
 
@@ -78,6 +89,7 @@ def config():
     clf_step = None
     return_pipeline = True
     use_expanded_y = True
+    clf_name = ""
 
 @ex.automain
 def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y):
