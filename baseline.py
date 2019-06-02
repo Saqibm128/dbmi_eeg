@@ -80,10 +80,14 @@ def knn_config():
     clf_step = ('knn', KNeighborsClassifier())
     return_pipeline = False # KNN holds all data we trained on, can't actually store this
 
+@ex.named_config
+def use_both_config():
+    use_both = True
 
 @ex.config
 def config():
     use_1 = False
+    use_both = False
     num_files = util_funcs.TOTAL_NUM_FILES
     parameters = {}
     clf_step = None
@@ -92,7 +96,7 @@ def config():
     clf_name = ""
 
 @ex.automain
-def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y):
+def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y, use_both):
     steps = [
         ('scaler', StandardScaler()),
         clf_step
@@ -104,7 +108,13 @@ def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y)
 
     gridsearch = GridSearchCV(pipeline, parameters, cv=5, scoring = make_scorer(f1_score, average="weighted"))
 
-    x_data, y_data = generate_x_y(use_1, num_files, use_expanded_y)
+    if use_both:
+        x_1_data, y_data = generate_x_y(True, num_files, use_expanded_y)
+        x_2_data, y_data_dup = generate_x_y(False, num_files, use_expanded_y)
+        assert (y_data == y_data_dup).all().all()
+        x_data = np.hstack([x_1_data, x_2_data])
+    else:
+        x_data, y_data = generate_x_y(use_1, num_files, use_expanded_y)
 
     X_train, X_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.2)
 
