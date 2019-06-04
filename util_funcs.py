@@ -7,6 +7,9 @@ import numpy as np
 
 TOTAL_NUM_FILES = 2012
 
+def return_seizure_types():
+    return ['ABSZ', 'CPSZ', 'FNSZ', 'GNSZ', 'MYSZ', 'SPSZ', 'TCSZ', 'TNSZ']
+
 def read_config():
     return json.load(open("config.json", "rb"))
 
