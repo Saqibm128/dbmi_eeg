@@ -14,6 +14,7 @@ from sacred import Experiment
 ex = Experiment('baseline_eeg')
 from sacred.observers import MongoObserver
 
+@ex.capture
 def generate_x_y(use_1, num_files, use_expanded_y=True, num_workers=None):
     data_all = util_funcs.read_all(use_1, num_workers, num_files)
     if not use_1:
@@ -91,9 +92,23 @@ def config():
     parameters = {}
     clf_step = None
     return_pipeline = True
-    use_expanded_y = True
+    use_expanded_y = True #expand to num_classes * num_instances array
     clf_name = ""
     ex.observers.append(MongoObserver.create(client=util_funcs.get_mongo_client()))
+
+@ex.capture
+def get_f1_by_seiz_type(y_test, y_pred, seiz_type, use_expanded_y):
+    y_test = single_seiz_type_array(y_test, seiz_type, use_expanded_y)
+    y_pred = single_seiz_type_array(y_pred, seiz_type, use_expanded_y)
+    return f1_score(y_test, y_pred)
+
+@ex.capture
+def single_seiz_type_array(y, seiz_type, use_expanded_y):
+    if not use_expanded_y:
+        return y == seiz_type
+    else:
+        y = pd.DataFrame(y, columns=util_funcs.get_seizure_types())
+        return y[seiz_type]
 
 
 @ex.automain
@@ -129,7 +144,14 @@ def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y,
 
 
     print("Best F1 Score: {}".format(f1_res))
+
+
+    f1_scores_by_seiz_type = pd.Series(index=util_funcs.get_seizure_types());
+    for seiz_type in util_funcs.get_seizure_types():
+        f1_scores_by_seiz_type[seiz_type] = get_f1_by_seiz_type(y_test, y_pred, seiz_type)
+    print(f1_scores_by_seiz_type)
+
     if not return_pipeline:
-        return f1_res, gridsearch.cv_results_
+        return f1_res, gridsearch.cv_results_, (y_test, y_pred), f1_scores_by_seiz_type
     else:
-        return f1_res, gridsearch
+        return f1_res, gridsearch, (y_test, y_pred), f1_scores_by_seiz_type

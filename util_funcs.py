@@ -7,7 +7,8 @@ import numpy as np
 import pymongo
 
 TOTAL_NUM_FILES = 2012
-
+def get_seizure_types():
+    return ['ABSZ', 'CPSZ', 'FNSZ', 'GNSZ', 'MYSZ', 'SPSZ', 'TCSZ', 'TNSZ']
 def get_mongo_client(path = "config.json"):
     config = read_config(path)
     if "mongo_uri" not in config.keys():
