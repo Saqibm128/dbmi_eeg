@@ -14,7 +14,7 @@ from sacred import Experiment
 ex = Experiment('baseline_eeg')
 from sacred.observers import MongoObserver
 
-def generate_x_y(use_1, num_files, use_expanded_y=True, num_workers=6):
+def generate_x_y(use_1, num_files, use_expanded_y=True, num_workers=None):
     data_all = util_funcs.read_all(use_1, num_workers, num_files)
     if not use_1:
         x_data = np.vstack([instance.data.mean(axis=0) for instance in data_all])
