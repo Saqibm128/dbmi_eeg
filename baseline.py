@@ -14,8 +14,8 @@ from sacred import Experiment
 ex = Experiment('baseline_eeg')
 from sacred.observers import MongoObserver
 
-def generate_x_y(use_1, num_files, json_config_path, use_expanded_y=True, num_workers=6):
-    data_all = util_funcs.read_all(use_1, num_workers, num_files, json_config_path)
+def generate_x_y(use_1, num_files, use_expanded_y=True, num_workers=6):
+    data_all = util_funcs.read_all(use_1, num_workers, num_files)
     if not use_1:
         x_data = np.vstack([instance.data.mean(axis=0) for instance in data_all])
     else:
@@ -93,12 +93,11 @@ def config():
     return_pipeline = True
     use_expanded_y = True
     clf_name = ""
-    json_config_path = "config.json"
-    ex.observers.append(MongoObserver.create(util_funcs.get_mongo_client(json_config_path)))
+    ex.observers.append(MongoObserver.create(client=util_funcs.get_mongo_client()))
 
 
 @ex.automain
-def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y, use_both, json_config_path):
+def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y, use_both):
     steps = [
         ('scaler', StandardScaler()),
         clf_step
@@ -111,8 +110,8 @@ def run(parameters, num_files, use_1, clf_step, return_pipeline, use_expanded_y,
     gridsearch = GridSearchCV(pipeline, parameters, cv=5, scoring = make_scorer(f1_score, average="weighted"))
 
     if use_both:
-        x_1_data, y_data = generate_x_y(True, num_files, use_expanded_y, json_config_path=)
-        x_2_data, y_data_dup = generate_x_y(False, num_files, use_expanded_y, json_config_path=)
+        x_1_data, y_data = generate_x_y(True, num_files, use_expanded_y)
+        x_2_data, y_data_dup = generate_x_y(False, num_files, use_expanded_y)
         assert (y_data == y_data_dup).all().all()
         x_data = np.hstack([x_1_data, x_2_data])
     else:
