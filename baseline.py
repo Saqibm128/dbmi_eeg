@@ -26,7 +26,7 @@ def generate_x_y(use_1, num_files, use_expanded_y=True, num_workers=None):
     if use_expanded_y:
         y_data = pd.DataFrame(
             index=range(num_files),
-            columns=set(y_data_strings)
+            columns=util_funcs.get_seizure_types()
             ).fillna(0)
         for i in range(num_files):
             y_data.loc[i, y_data_strings[i]] = 1
