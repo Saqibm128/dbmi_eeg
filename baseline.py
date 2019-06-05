@@ -49,7 +49,8 @@ def lr_config():
         'lr__multi_class': ["multinomial"],
         'lr__C': [0.05, .1, .2],
         'lr__solver': ["sag"],
-        'lr__max_iter': [250]
+        'lr__max_iter': [250],
+        'lr__n_jobs': [-1]
     }
     clf_name = "lr"
     clf_step = ('lr', LogisticRegression())
@@ -63,7 +64,7 @@ def rf_config():
         'rf__max_features' : ['auto', 'log2', .1, .4, .8],
         'rf__max_depth' : [None, 2, 4],
         'rf__min_samples_split' : [2,8],
-        'rf__n_jobs' : [6],
+        'rf__n_jobs' : [-1],
         'rf__min_weight_fraction_leaf' : [0, 0.2, 0.5]
     }
     clf_name = "rf"
@@ -74,7 +75,8 @@ def rf_config():
 def knn_config():
     parameters = {
         'knn__n_neighbors': [1,2,4,8,16],
-        'knn__p': [1,2]
+        'knn__p': [1,2],
+        'knn__n_jobs': [-1]
     }
     clf_name = "knn"
     clf_step = ('knn', KNeighborsClassifier())
