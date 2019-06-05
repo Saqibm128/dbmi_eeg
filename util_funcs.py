@@ -4,11 +4,20 @@ from addict import Dict
 from pathos.multiprocessing import Pool
 import pandas as pd
 import numpy as np
+import pymongo
 
 TOTAL_NUM_FILES = 2012
 
-def read_config():
-    return json.load(open("config.json", "rb"))
+def get_mongo_client(path = "config.json"):
+    config = read_config(path)
+    if "mongo_uri" not in config.keys():
+        return pymongo.MongoClient()
+    else:
+        mongo_uri = config["mongo_uri"]
+        return pymongo.MongoClient(mongo_uri)
+
+def read_config(path="config.json"):
+    return json.load(open(path, "rb"))
 
 def read_preproc_1(id):
     root_path = read_config()["preprocessed_1"]
