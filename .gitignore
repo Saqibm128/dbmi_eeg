@@ -2,3 +2,5 @@
 *.pyc
 config.json
 configWindow.json
+configLinux.json
+*.pt
