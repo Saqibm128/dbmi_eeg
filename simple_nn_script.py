@@ -134,7 +134,6 @@ def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device
                        )
         if valid_score > best_acc:
             torch.save(net, clf_name)
-            ex.add_artifact(clf_name)
             best_acc = valid_score
         if epoch % batch_print_size == 0:
             print('Validation F1: %.3f' % valid_score)
@@ -142,6 +141,7 @@ def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device
 
     net.eval()
     best_model = torch.load(clf_name)
+    ex.add_artifact(clf_name) #add once to avoid overloading mongodb
     tensor_x_test = torch.Tensor(x_test).to(device)
     tensor_y_test = torch.Tensor(y_test).to(device)
     outputs = net(tensor_x_test)
