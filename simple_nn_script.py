@@ -64,14 +64,17 @@ def config():
     momentum = 0.9
     step_size = 50
     gamma = 0.8
+    dropout = 0.5
+    hidden_size_factor = 10
 
 @ex.automain
-def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device, clf_name, lr, momentum, step_size, gamma):
+def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device, clf_name, lr, momentum, step_size, gamma, dropout, hidden_size_factor):
     x_data, y_data = get_data()
     net = NeuralNet(
             x_data.shape[1],
-            x_data.shape[1] * 10,
-            len(util_funcs.get_seizure_types())
+            x_data.shape[1] * hidden_size_factor,
+            len(util_funcs.get_seizure_types()),
+            dropout
         ).to(device)
     best_model = net
     best_acc = -100
