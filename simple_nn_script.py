@@ -22,6 +22,7 @@ def get_data(use_1, use_both, num_files):
         x_2_data, y_data_dup = get_data(False, False)
         assert (y_data == y_data_dup).all().all()
         x_data = np.hstack([x_1_data, x_2_data])
+        return x_data, y_data
     elif not use_1:
         data_all = util_funcs.read_all(use_1, num_files=num_files)
         x_data = np.vstack([instance.data.mean(axis=0) for instance in data_all])
@@ -42,6 +43,7 @@ def get_data(use_1, use_both, num_files):
 def debug_config():
     batch_print_size = 1
     num_epochs = 10
+    num_files = 150
 
 @ex.config
 def config():
