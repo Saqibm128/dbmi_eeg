@@ -123,7 +123,7 @@ def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device
 
 
 
-            if i % batch_print_size == 0:
+            if i % 5 == 0:
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
@@ -136,7 +136,7 @@ def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device
             torch.save(net, clf_name)
             ex.add_artifact(clf_name)
             best_acc = valid_score
-        if i % batch_print_size == 0:
+        if epoch % batch_print_size == 0:
             print('Validation F1: %.3f' % valid_score)
         scheduler.step()
 
