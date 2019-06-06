@@ -19,7 +19,7 @@ from sklearn.metrics import f1_score
 def get_data(use_1, use_both, num_files):
     if use_both:
         x_1_data, y_data = get_data(True, False)
-        x_2_data, y_data_dup = generate_x_y(False, False)
+        x_2_data, y_data_dup = get_data(False, False)
         assert (y_data == y_data_dup).all().all()
         x_data = np.hstack([x_1_data, x_2_data])
     elif not use_1:
