@@ -76,7 +76,6 @@ def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device
             len(util_funcs.get_seizure_types()),
             dropout
         ).to(device)
-    best_model = net
     best_acc = -100
     x_train_plus, x_test, y_train_plus, y_test = \
         sklearn.model_selection.train_test_split(x_data,

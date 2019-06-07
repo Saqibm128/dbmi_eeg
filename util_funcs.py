@@ -30,7 +30,7 @@ def read_preproc_2(id, debug=True):
     root_path = read_config()["preprocessed_2"]
     return pkl.load(open(os.path.join(root_path, "seiz_{}.pkl".format(id)), "rb"));
 
-def read_all(use_1=False, num_workers=4, num_files=TOTAL_NUM_FILES):
+def read_all(use_1=False, num_workers=None, num_files=TOTAL_NUM_FILES):
     p = Pool(processes = num_workers)
     if use_1:
         return p.map(read_preproc_1, [i for i in range(num_files)])
