@@ -53,7 +53,7 @@ def create_model(input_size, hidden_size_factor, num_lstm_layers, num_classes):
 
 @ex.config
 def config():
-    use_1 = True
+    use_1 = False
     num_files = 150
     use_both = False
     num_epochs = 100
@@ -126,7 +126,7 @@ def main(test_size, valid_size, device, batch_size, lr, gamma, momentum, step_si
 
 
             # print statistics
-            running_loss += loss.item()
+            running_loss += float(loss.item())
 
             tensor_x_valid = torch.Tensor(x_valid).to(device)
             tensor_y_valid = torch.Tensor(y_valid).to(device)

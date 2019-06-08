@@ -119,7 +119,7 @@ def main(test_size, valid_size, batch_size, num_epochs, batch_print_size, device
 
 
             # print statistics
-            running_loss += loss.item()
+            running_loss += float(loss.item())
 
             tensor_x_valid = torch.Tensor(x_valid).to(device)
             tensor_y_valid = torch.Tensor(y_valid).to(device)
